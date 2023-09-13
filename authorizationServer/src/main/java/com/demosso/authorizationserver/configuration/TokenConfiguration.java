@@ -7,16 +7,22 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.token.*;
+import org.springframework.util.StringUtils;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,14 +48,37 @@ public class TokenConfiguration {
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() {
         return context -> {
-            User principal = (User) context.getPrincipal().getPrincipal();
+            AbstractAuthenticationToken principal = context.getPrincipal();
+            Collection<? extends GrantedAuthority> authorities = Collections.emptySet();
+            String username = null;
+
+            if (principal instanceof OAuth2ClientAuthenticationToken) {
+                UserDetails userDetails = (UserDetails) principal.getDetails();
+
+                username = userDetails.getUsername();
+                authorities = userDetails.getAuthorities();
+            } else if (principal instanceof AbstractAuthenticationToken) {
+                User user = (User) principal.getPrincipal();
+
+                username = user.getUsername();
+                authorities = user.getAuthorities();
+            } else {
+                throw new IllegalStateException("Unexpected token type");
+            }
+
+            if (!StringUtils.hasText(username)) {
+                throw new IllegalStateException("Bad UserDetails, username is empty");
+            }
 
             context.getClaims()
                 .claim(
                     "authorities",
-                    principal.getAuthorities().stream()
+                    authorities.stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toSet())
+                )
+                .claim(
+                    "username", username
                 );
         };
     }
