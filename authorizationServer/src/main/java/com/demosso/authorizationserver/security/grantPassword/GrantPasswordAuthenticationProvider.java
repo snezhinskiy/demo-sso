@@ -7,7 +7,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -81,9 +81,9 @@ public class GrantPasswordAuthenticationProvider implements AuthenticationProvid
         String username = customPasswordAuthenticationToken.getUsername();
         String password = customPasswordAuthenticationToken.getPassword();
 
-        User user = null;
+        UserDetails user = null;
         try {
-            user = (User) userDetailsService.loadUserByUsername(username);
+            user = userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.ACCESS_DENIED);
         }

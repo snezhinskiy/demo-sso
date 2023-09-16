@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
@@ -14,8 +13,6 @@ import org.springframework.security.oauth2.server.authorization.authentication.O
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.util.StringUtils;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Configuration(proxyBeanMethods = false)
@@ -40,37 +37,29 @@ public class TokenConfiguration {
     @Bean
     public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer () {
         return context -> {
-            AbstractAuthenticationToken principal = context.getPrincipal();
-            Collection<? extends GrantedAuthority> authorities = Collections.emptySet();
-            String username = null;
+            UserDetails userDetails = null;
 
-            if (principal instanceof OAuth2ClientAuthenticationToken) {
-                UserDetails userDetails = (UserDetails) principal.getDetails();
-
-                username = userDetails.getUsername();
-                authorities = userDetails.getAuthorities();
-            } else if (principal instanceof AbstractAuthenticationToken) {
-                User user = (User) principal.getPrincipal();
-
-                username = user.getUsername();
-                authorities = user.getAuthorities();
+            if (context.getPrincipal() instanceof OAuth2ClientAuthenticationToken) {
+                userDetails = (UserDetails) context.getPrincipal().getDetails();
+            } else if (context.getPrincipal() instanceof AbstractAuthenticationToken) {
+                userDetails = (UserDetails) context.getPrincipal().getPrincipal();
             } else {
                 throw new IllegalStateException("Unexpected token type");
             }
 
-            if (!StringUtils.hasText(username)) {
+            if (!StringUtils.hasText(userDetails.getUsername())) {
                 throw new IllegalStateException("Bad UserDetails, username is empty");
             }
 
             context.getClaims()
                 .claim(
                     "authorities",
-                    authorities.stream()
+                    userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toSet())
                 )
                 .claim(
-                    "username", username
+                    "username", userDetails.getUsername()
                 );
         };
     }
