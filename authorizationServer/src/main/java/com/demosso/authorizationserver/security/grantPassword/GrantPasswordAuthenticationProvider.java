@@ -83,7 +83,7 @@ public class GrantPasswordAuthenticationProvider implements AuthenticationProvid
 
         UserDetails user = null;
         try {
-            user = (UserDetails) userDetailsService.loadUserByUsername(username);
+            user = userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.ACCESS_DENIED);
         }
