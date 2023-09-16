@@ -1,5 +1,6 @@
 package com.demosso.authorizationserver.security;
 
+import com.demosso.authorizationserver.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,16 @@ public class CustomUserDetails implements UserDetails {
         this.password = password;
         this.authorities = authorities.stream()
             .map(authority -> new SimpleGrantedAuthority(authority))
+            .collect(Collectors.toList());
+    }
+
+    public CustomUserDetails(User user) {
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.authorities = user.getRoles().stream()
+            .flatMap(role -> role.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+            )
             .collect(Collectors.toList());
     }
 

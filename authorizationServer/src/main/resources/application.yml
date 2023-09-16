@@ -7,3 +7,25 @@ logging:
     com.demosso.authorizationserver: DEBUG
     org.springframework.jdbc: DEBUG
     org.springframework.security: trace
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5442/demosso
+    username: demosso
+    password: password
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+
+    hikari:
+      connection-test-query: "SELECT 1"
+      connectionTimeout: 30000
+      validation-timeout: 30000
+      maximum-pool-size: 10
+      initialization-fail-timeout: 1
+      leak-detection-threshold: 0
+      auto: none
+
+  flyway:
+    url: jdbc:postgresql://localhost:5442/demosso
+    user: demosso
+    password: password
