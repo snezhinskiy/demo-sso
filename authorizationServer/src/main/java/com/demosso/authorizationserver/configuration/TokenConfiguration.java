@@ -8,7 +8,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.token.*;
@@ -42,7 +42,7 @@ public class TokenConfiguration {
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() {
         return context -> {
-            User principal = (User) context.getPrincipal().getPrincipal();
+            UserDetails principal = (UserDetails) context.getPrincipal().getPrincipal();
 
             context.getClaims()
                 .claim(
