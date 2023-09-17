@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -48,7 +49,8 @@ public class AuthorizationServerConfiguration {
                     .accessTokenRequestConverter(new OAuth2GrantPasswordAuthenticationConverter())
                     .authenticationProvider(grantPasswordAuthenticationProvider)
                     .authenticationProvider(daoAuthenticationProvider)
-            );
+            )
+            .oidc(Customizer.withDefaults()); // Enable OpenID Connect 1.0
 
         http
             .exceptionHandling(

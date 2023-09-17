@@ -20,6 +20,7 @@ public class SecurityConfiguration {
                     .anyRequest().authenticated()
             )
             .formLogin(withDefaults())
+            .oauth2Login(withDefaults())
             .logout((logout) -> logout.permitAll())
             .build();
     }
