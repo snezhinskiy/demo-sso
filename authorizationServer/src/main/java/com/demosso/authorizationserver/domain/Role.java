@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -31,7 +32,7 @@ public class Role implements Serializable {
     @JoinTable(name = "role_authority",
         joinColumns = @JoinColumn(name = "role_id"),
         inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authorities;
+    private Set<Authority> authorities = new HashSet<>();
 
     private String name;
 }
