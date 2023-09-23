@@ -2,18 +2,21 @@ package com.demosso.authorizationserver.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "User")
 @Table(name = "app_user")
 public class User implements Serializable {
@@ -27,7 +30,7 @@ public class User implements Serializable {
 	@JoinTable(name = "user_role",
 		joinColumns = @JoinColumn(name = "user_id"),
 		inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles;
+	private Set<Role> roles = new HashSet<>();
 
 	@Column(nullable = false, unique = true)
 	private String username;
