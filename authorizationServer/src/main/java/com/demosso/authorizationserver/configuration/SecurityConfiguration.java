@@ -36,7 +36,7 @@ public class SecurityConfiguration {
             // {noop} means "no operation," i.e., a raw password without any encoding applied.
             .password("{noop}secret")
 
-            .roles("USER")
+            .roles("ADMIN")
             .authorities("ARTICLE_READ", "ARTICLE_WRITE")
             .build();
 
