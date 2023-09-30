@@ -68,6 +68,8 @@ public class OAuth2GrantPasswordAuthenticationConverter implements Authenticatio
             .filter(entry ->
                 !OAuth2ParameterNames.GRANT_TYPE.equals(entry.getKey())
                     && !OAuth2ParameterNames.SCOPE.equals(entry.getKey())
+                    && !OAuth2ParameterNames.PASSWORD.equals(entry.getKey())
+                    && !OAuth2ParameterNames.USERNAME.equals(entry.getKey())
             )
             .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get(0)));
 
